@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Undangan - Rara & Adi</title>
+  <style>
+    :root{--bg:#fff9f6;--accent:#b76e79;--muted:#6b6b6b;--card:#ffffff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;line-height:1.4;background:linear-gradient(180deg,var(--bg),#fff);color:#222}
+    header{position:fixed;left:0;right:0;top:0;z-index:40;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px}
+    .brand{font-weight:600;letter-spacing:0.6px}
+    nav a{margin-left:18px;text-decoration:none;color:var(--muted);font-size:15px}
+
+    .hero{min-height:78vh;display:grid;place-items:center;padding-top:72px}
+    .card{max-width:980px;margin:28px;padding:36px;border-radius:14px;background:var(--card);box-shadow:0 10px 30px rgba(0,0,0,0.06);display:grid;grid-template-columns:1fr 360px;gap:28px}
+    .names{font-size:34px;font-weight:700;margin:0}
+    .date{color:var(--muted);margin-top:6px}
+    .recipient{margin-top:18px;padding:10px;border-radius:8px;background:linear-gradient(90deg,rgba(183,110,121,0.06),rgba(183,110,121,0.03));display:flex;align-items:center;gap:12px}
+    .recipient strong{font-size:16px}
+
+    .section{padding:44px 0;border-top:1px solid rgba(0,0,0,0.03)}
+    .grid-2{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start}
+    .mempelai{display:flex;gap:18px}
+    .avatar{width:140px;height:140px;border-radius:10px;background:#eee;flex-shrink:0;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .meta h4{margin:0 0 6px 0}
+
+    .btn{display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;background:var(--accent);color:#fff;font-weight:600}
+
+    .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+    .gallery img{width:100%;height:120px;object-fit:cover;border-radius:8px;cursor:pointer}
+
+    form.rsvp{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e6e6e6}
+
+    footer{padding:40px 0;color:var(--muted);text-align:center}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:all 600ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.visible{opacity:1;transform:none}
+
+    .petal{position:fixed;top:-10vh;pointer-events:none;z-index:30;opacity:0.9;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.08))}
+
+    @media (max-width:900px){.card{grid-template-columns:1fr;padding:20px}.grid-2{grid-template-columns:1fr}.hero{padding-top:90px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">Rara &amp; Adi</div>
+      <nav>
+        <a href="#mempelai">Mempelai</a>
+        <a href="#acara">Acara</a>
+        <a href="#galeri">Galeri</a>
+        <a href="#lokasi">Lokasi</a>
+        <a href="#ucapan">Ucapan</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Background music -->
+  <audio id="bgMusic" loop preload="auto" src="https://raw.githubusercontent.com/smartcupid1314/undangan-online/main/music/background.mp3"></audio>
+  <button id="musicToggle" style="position:fixed;right:18px;bottom:18px;border-radius:999px;padding:12px;background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:60">🔈</button>
+
+  <!-- falling petals container -->
+  <div id="petals"></div>
+
+  <main>
+    <section class="hero">
+      <article class="card reveal">
+        <div>
+          <h1 class="names">Rara &amp; Adi</h1>
+          <div class="date">Sabtu, 13 Desember 2025 — 10:00</div>
+
+          <div class="recipient" id="recipientLine">
+            <div style="font-size:13px;color:var(--muted)">Kepada</div>
+            <div style="flex:1"><strong id="recipientName">Budi dan Ani</strong> — Bandung</div>
+            <a class="btn" id="openInvite">Buka undangan</a>
+          </div>
+
+          <p style="margin-top:18px;color:var(--muted);">Dengan Rahmat Allah, kami mengundang Anda hadir pada acara pernikahan kami. Detail acara ada di bawah.</p>
+
+          <div style="margin-top:20px">
+            <a class="btn" href="#acara">Lihat Acara</a>
+            <a class="btn" style="background:transparent;color:var(--accent);border:1px solid rgba(183,110,121,0.12);margin-left:10px" href="#ucapan">Kirim Ucapan</a>
+          </div>
+        </div>
+
+        <aside style="padding:6px;display:flex;flex-direction:column;gap:8px">
+          <div style="background:linear-gradient(180deg,#fff,#fff);padding:8px;border-radius:10px;text-align:center">
+            <div style="font-size:13px;color:var(--muted)">Countdown</div>
+            <div id="countdown" style="font-weight:700;font-size:18px">-- hari</div>
+            <a id="addToCal" class="btn" style="display:block;margin-top:8px">Simpan ke Kalender</a>
+          </div>
+
+          <div style="padding:8px;background:#fafafa;border-radius:10px;text-align:center">
+            <div style="font-size:13px;color:var(--muted)">Lokasi</div>
+            <div style="font-weight:600">Aula Masjid ABRI Cimahi</div>
+            <a id="openMaps" href="#lokasi" style="font-size:13px;color:var(--muted);text-decoration:none">Buka peta</a>
+          </div>
+
+          <a id="whatsappRsvp" class="btn" style="margin-top:8px;text-align:center;background:#25D366">Kirim RSVP via WhatsApp</a>
+        </aside>
+      </article>
+    </section>
+
+    <section id="mempelai" class="section reveal">
+      <div class="grid-2" style="max-width:1100px;margin:0 auto">
+        <div>
+          <h2>Mempelai</h2>
+          <div class="mempelai">
+            <div class="avatar"><img src="https://picsum.photos/seed/1/600/600" alt="Mempelai pria"></div>
+            <div class="meta">
+              <h4>Adi Sumaryadi</h4>
+              <div style="color:var(--muted);">Putra dari Sumarmo &amp; Kantun</div>
+              <p style="margin-top:12px;color:var(--muted);">Deskripsi singkat tentang mempelai pria. Tambahkan cerita, kutipan, atau doa.</p>
+            </div>
+          </div>
+
+          <div style="height:22px"></div>
+
+          <div class="mempelai">
+            <div class="avatar"><img src="https://picsum.photos/seed/2/600/600" alt="Mempelai wanita"></div>
+            <div class="meta">
+              <h4>Siti Salamah Azzahra</h4>
+              <div style="color:var(--muted);">Putri dari Maman &amp; Imas</div>
+              <p style="margin-top:12px;color:var(--muted);">Deskripsi singkat tentang mempelai wanita. Tambahkan cerita, kutipan, atau doa.</p>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <h3>Undangan &amp; Acara</h3>
+          <div style="margin-top:8px">
+            <strong>Akad:</strong>
+            <div class="date">Sabtu, 13 Desember 2025 — 10:00</div>
+          </div>
+          <div style="margin-top:12px">
+            <strong>Resepsi:</strong>
+            <div class="date">Sabtu, 13 Desember 2025 — 12:00</div>
+          </div>
+          <div style="margin-top:12px">
+            <a class="btn" id="printBtn">Cetak / Download PDF</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="galeri" class="section reveal">
+      <div style="max-width:1100px;margin:0 auto;padding:0 20px">
+        <h2>Photo Galeri</h2>
+        <div class="gallery" style="margin-top:12px">
+          <img src="https://picsum.photos/seed/11/800/600" alt="foto" data-large>
+          <img src="https://picsum.photos/seed/12/800/600" alt="foto" data-large>
+          <img src="https://picsum.photos/seed/13/800/600" alt="foto" data-large>
+          <img src="https://picsum.photos/seed/14/800/600" alt="foto" data-large>
+        </div>
+      </div>
+    </section>
+
+    <section id="lokasi" class="section reveal">
+      <div style="max-width:1100px;margin:0 auto;padding:0 20px">
+        <h2>Lokasi</h2>
+        <p style="color:var(--muted)">Alamat lengkap acara. Klik peta untuk membuka di Google Maps.</p>
+        <div style="margin-top:12px;border-radius:14px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,0.06)">
+          <iframe id="gmapEmbed" src="https://maps.google.com/maps?q=Cimahi&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="360" style="border:0" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+        <div style="margin-top:12px">
+          <a class="btn" id="openRoute">Buka Rute di Google Maps</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="ucapan" class="section reveal">
+      <div style="max-width:760px;margin:0 auto;padding:0 20px">
+        <h2>Doa &amp; Ucapan</h2>
+        <form class="rsvp" id="rsvpForm" onsubmit="handleRSVP(event)">
+          <input id="guestName" placeholder="Nama Anda" required>
+          <select id="attend">
+            <option value="hadir">Saya Akan hadir</option>
+            <option value="tidak">Saya Tidak Akan hadir</option>
+          </select>
+          <textarea id="message" rows="4" placeholder="Tulis doa atau ucapan... (opsional)"></textarea>
+          <button class="btn" type="submit">KIRIM</button>
+        </form>
+
+        <div id="messages" style="margin-top:20px"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto">Terima kasih telah berkunjung — Rara &amp; Adi</div>
+  </footer>
+
+  <!-- lightbox modal -->
+  <div id="lightbox" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,0.6);z-index:80">
+    <img id="lightboxImg" src="" style="max-width:96%;max-height:86%;border-radius:8px;box-shadow:0 14px 40px rgba(0,0,0,0.6)">
+  </div>
+
+  <!-- external libs for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    /***** CONFIG (diisi sesuai input) *****/
+    const CONFIG = {
+      musicUrl: 'https://raw.githubusercontent.com/smartcupid1314/undangan-online/main/music/background.mp3',
+      waNumber: '1234567890', // yang kamu kasih
+      mapsShortUrl: 'https://maps.app.goo.gl/bokj2txArMbWqtmu7',
+      event: {
+        title: 'Akad Nikah — Rara & Adi',
+        start: '2025-12-13T10:00:00',
+        end: '2025-12-13T13:00:00',
+        location: 'Aula Masjid ABRI Cimahi'
+      },
+      // jika mauhubungkan ke Google Sheets: letakkan URL Apps Script webapp di sini
+      googleSheetsWebhook: '' // contoh: 'https://script.google.com/macros/s/AKfy.../exec'
+    }
+
+    // Smooth reveal on scroll
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting) e.target.classList.add('visible')
+      })
+    },{threshold:0.12})
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el))
+
+    // Apply recipient from URL (support ?kepada=Budi%20dan%20Ani-Bandung)
+    (function applyRecipientFromURL(){
+      try{
+        const q = new URLSearchParams(location.search)
+        const raw = q.get('kepada') || q.get('to') || q.get('recipient')
+        if(raw){
+          const parts = raw.split('-')
+          const name = decodeURIComponent(parts[0])
+          const city = parts[1] ? decodeURIComponent(parts[1]) : ''
+          document.getElementById('recipientName').textContent = name + (city? ' — ' + city : '')
+        }
+      }catch(e){}
+    })()
+
+    // Countdown
+    const target = new Date(CONFIG.event.start)
+    function updateCountdown(){
+      const diff = target - new Date()
+      const el = document.getElementById('countdown')
+      if(diff<=0){el.textContent='Hari ini'}
+      else{
+        const days = Math.floor(diff/86400000)
+        el.textContent=days+ ' hari'
+      }
+    }
+    updateCountdown();setInterval(updateCountdown,1000*60*60)
+
+    // Music control
+    const music = document.getElementById('bgMusic')
+    const musicToggle = document.getElementById('musicToggle')
+    music.src = CONFIG.musicUrl
+    music.preload = 'auto'
+    music.muted = true
+    music.play().catch(()=>{})
+    musicToggle.addEventListener('click',()=>{
+      if(music.paused){
+        music.play().catch(()=>{})
+      }
+      music.muted = !music.muted
+      musicToggle.textContent = music.muted ? '🔈' : '🔊'
+    })
+    window.addEventListener('pointerdown',()=>{ if(music.muted){ music.muted=false; musicToggle.textContent='🔊' } },{once:true})
+
+    // Lightbox
+    document.querySelectorAll('.gallery img').forEach(img=>{
+      img.addEventListener('click',()=>{
+        document.getElementById('lightboxImg').src = img.src.replace('/800/600','/1200/900')
+        document.getElementById('lightbox').style.display = 'grid'
+      })
+    })
+    document.getElementById('lightbox').addEventListener('click',()=>document.getElementById('lightbox').style.display='none')
+
+    // Gallery slideshow autoplay (lightbox flash)
+    let galleryIndex = 0
+    const galleryImgs = Array.from(document.querySelectorAll('.gallery img'))
+    function autoGallery(){
+      if(galleryImgs.length===0) return
+      galleryIndex = (galleryIndex+1) % galleryImgs.length
+      const img = galleryImgs[galleryIndex]
+      document.getElementById('lightboxImg').src = img.src.replace('/800/600','/1200/900')
+      document.getElementById('lightbox').style.display = 'grid'
+      setTimeout(()=>document.getElementById('lightbox').style.display='none',2500)
+    }
+    setInterval(autoGallery,5000)
+
+    // Print / PDF using html2canvas + jsPDF
+    document.getElementById('printBtn').addEventListener('click',async ()=>{
+      const el = document.querySelector('main')
+      const canvas = await html2canvas(el, {scale:2})
+      const imgData = canvas.toDataURL('image/png')
+      const { jsPDF } = window.jspdf
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width, canvas.height] })
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height)
+      pdf.save('undangan.pdf')
+    })
+
+    // WhatsApp RSVP button
+    const waBtn = document.getElementById('whatsappRsvp')
+    waBtn.addEventListener('click',()=>{
+      const text = encodeURIComponent("Assalamu'alaikum, saya *[Nama]*\\nSaya akan hadir ke acara pernikahan Rara & Adi pada 13 Desember 2025.")
+      const url = `https://wa.me/${CONFIG.waNumber}?text=${text}`
+      window.open(url,'_blank')
+    })
+
+    // Open route (short maps url)
+    document.getElementById('openRoute').addEventListener('click',()=>{
+      window.open(CONFIG.mapsShortUrl,'_blank')
+    })
+    document.getElementById('openMaps').href = CONFIG.mapsShortUrl
+
+    // Add to Google Calendar (opens Google Calendar with prefilled event)
+    document.getElementById('addToCal').addEventListener('click',()=>{
+      const s = new Date(CONFIG.event.start).toISOString().replace(/-|:|\.\d+/g,'')
+      const e = new Date(CONFIG.event.end).toISOString().replace(/-|:|\.\d+/g,'')
+      const calUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(CONFIG.event.title)}&dates=${s}/${e}&details=${encodeURIComponent('Undangan pernikahan')}&location=${encodeURIComponent(CONFIG.event.location)}`
+      window.open(calUrl,'_blank')
+    })
+
+    // RSVP handler: saves locally and can POST to Google Sheets webhook (Apps Script)
+    function handleRSVP(e){
+      e.preventDefault()
+      const name = document.getElementById('guestName').value
+      const attend = document.getElementById('attend').value
+      const msg = document.getElementById('message').value
+      const store = JSON.parse(localStorage.getItem('rsvps')||'[]')
+      const data = {name,attend,msg,time:Date.now()}
+      store.unshift(data)
+      localStorage.setItem('rsvps',JSON.stringify(store))
+      renderMessages()
+
+      if(CONFIG.googleSheetsWebhook){
+        fetch(CONFIG.googleSheetsWebhook, {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(data)
+        }).catch(err=>console.warn('GSheets webhook failed',err))
+      }
+
+      e.target.reset()
+      alert('Terima kasih, ucapan/RSVP Anda sudah tercatat.')
+    }
+    function renderMessages(){
+      const msgs = JSON.parse(localStorage.getItem('rsvps')||'[]')
+      const container = document.getElementById('messages')
+      container.innerHTML = msgs.slice(0,20).map(m=>`<div style="padding:10px;border-radius:8px;background:#fff;margin-bottom:8px;box-shadow:0 6px 18px rgba(0,0,0,0.04)"><strong>${escapeHtml(m.name)}</strong> <div style='color:var(--muted);font-size:13px'>${m.attend=='hadir'?'Akan hadir':'Tidak hadir'}</div><p style='margin-top:8px'>${escapeHtml(m.msg)}</p></div>`).join('')
+    }
+    function escapeHtml(s){return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    renderMessages()
+
+    document.getElementById('openInvite').addEventListener('click',()=>{
+      document.querySelector('main').scrollIntoView({behavior:'smooth'})
+    })
+
+    // Falling petals animation
+    function createPetal(){
+      const petal = document.createElement('div')
+      petal.className = 'petal'
+      const size = Math.random()*28 + 14
+      petal.style.width = size + 'px'
+      petal.style.height = size + 'px'
+      petal.style.left = Math.random()*100 + 'vw'
+      petal.style.opacity = 0.8 + Math.random()*0.2
+      petal.style.transform = `rotate(${Math.random()*360}deg)`
+      petal.style.backgroundImage = `radial-gradient(circle at 40% 30%, rgba(183,110,121,0.85), rgba(255,255,255,0.1))`
+      petal.style.borderRadius = '50% 40% 50% 40%'
+      document.getElementById('petals').appendChild(petal)
+      const duration = 8000 + Math.random()*8000
+      petal.animate([
+        { transform: petal.style.transform, top: '-10vh', opacity: petal.style.opacity },
+        { transform: `translateY(${110 + Math.random()*40}vh) rotate(${Math.random()*720}deg)`, top: '110vh', opacity: 0.2 }
+      ],{duration: duration, easing: 'linear'})
+      setTimeout(()=>petal.remove(), duration)
+    }
+    setInterval(createPetal, 600)
+
+    // Accessibility
+    window.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('lightbox').style.display='none' })
+  </script>
+
+</body>
+</html>
